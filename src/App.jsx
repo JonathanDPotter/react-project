@@ -1,4 +1,6 @@
-const { Component } = require("react");
+import { Component } from "react";
+import FilmsList from "./components/FilmsList";
+import "./App.css";
 
 class App extends Component {
   constructor() {
@@ -18,7 +20,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="main">
         <h1>Hello World</h1>
         <form onSubmit={this.onSubmit}>
           <input
@@ -30,9 +32,7 @@ class App extends Component {
           <button type="submit">Add</button>
         </form>
         <ul>
-          {this.state.list.map((listItem, i) => (
-            <li key={i}>{listItem}</li>
-          ))}
+          <FilmsList />
         </ul>
       </div>
     );
