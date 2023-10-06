@@ -1,38 +1,40 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
-class FilmsList extends Component {
-  constructor() {
-    super();
-    this.state = { list: [], loading: false };
-    this.getFilms = this.getFilms.bind(this);
-  }
+const FilmsList = () => {
+  const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
 
-  componentDidMount() {
-    this.getFilms();
-  }
+  const getFilms = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "https://studioghibliapi-d6fc8.web.app/films"
+      );
+      const data = await response.json();
+      setList(data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-  getFilms() {
-    this.setState({ loading: true });
-    fetch("https://studioghibliapi-d6fc8.web.app/films")
-      .then((response) => response.json())
-      .then((json) => {
-        this.setState({ list: json });
-        this.setState({ loading: false });
-      })
-      .catch((error) => console.log(error.message));
-  }
+  useEffect(() => {
+    getFilms();
+  }, []);
 
-  render() {
-    return (
-      <>
-        {this.state.loading ? (
-          <li>loading...</li>
-        ) : (
-          this.state.list.map((film) => <li key={film.id}>{film.title}</li>)
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      {loading ? (
+        <li>loading films...</li>
+      ) : (
+        <ul>
+          {list.map((film) => (
+            <li key={film.id}>{film.title}</li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+};
 
 export default FilmsList;

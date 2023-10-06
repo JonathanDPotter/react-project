@@ -1,42 +1,38 @@
-import { Component } from "react";
 import FilmsList from "./components/FilmsList";
 import "./App.css";
+import { useState } from "react";
 
-class App extends Component {
-  constructor() {
-    super();
+const App = () => {
+  const [list, setList] = useState(["ready", "set", "GO"]);
+  const [text, setText] = useState("");
 
-    this.state = {
-      list: ["ready", "set", "GO"],
-      text: "",
-    };
-    this.onSubmit = this.onSubmit.bind(this);
-  }
-
-  onSubmit(event) {
+  const onSubmit = (event) => {
     event.preventDefault();
-    this.setState({ list: [...this.state.list, this.state.text] });
-  }
+    setList((prev) => [...prev, text]);
+    setText("");
+  };
 
-  render() {
-    return (
-      <div className="main">
-        <h1>Hello World</h1>
-        <form onSubmit={this.onSubmit}>
-          <input
-            type="text"
-            name="text"
-            id="text"
-            onChange={(event) => this.setState({ text: event.target.value })}
-          />
-          <button type="submit">Add</button>
-        </form>
-        <ul>
-          <FilmsList />
-        </ul>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="main">
+      <h1>Hello World</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          name="text"
+          id="text"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+        />
+        <button type="submit">Add</button>
+      </form>
+      <ul>
+        {list.map((listItem, i) => (
+          <li key={i}>{listItem}</li>
+        ))}
+      </ul>
+      <FilmsList />
+    </div>
+  );
+};
 
 export default App;
