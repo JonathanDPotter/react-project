@@ -1,37 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { filterFilmsByDirector, getListOf } from "../helpers/film.helpers";
+import {
+  filterFilmsByDirector,
+  getFilms,
+  getListOf,
+  getFilmStats,
+} from "../helpers/film.helpers";
+import { Link } from "react-router-dom";
+import "./Films.page.css";
 
 const FilmsPage = () => {
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState([]);
   const [searchDirector, setSearchDirector] = useState("");
 
-  const getFilms = async () => {
+  // moved getFilms to helpers in order to use it to fetch single films as well and keep things DRY
+
+  const loadFilms = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(
-        "https://studioghibliapi-d6fc8.web.app/films"
-      );
-      const data = await response.json();
-      setList(data);
-      setLoading(false);
-    } catch (error) {
-      console.log(error.message);
-    }
+    setList(await getFilms());
+    setLoading(false);
   };
 
   useEffect(() => {
-    getFilms();
+    loadFilms();
   }, []);
 
-  const filmsByDirector = filterFilmsByDirector(list, searchDirector);
-
+  const filteredFilms = filterFilmsByDirector(list, searchDirector);
+  const { total, avg_score, latest } = getFilmStats(filteredFilms);
   const directors = getListOf(list, "director");
 
-  console.log(directors);
-
   return (
-    <div>
+    <div className="films-page">
       <h1>Studio Ghibli Films</h1>
       <form method="submit">
         <div className="form-group">
@@ -42,7 +41,9 @@ const FilmsPage = () => {
           >
             <option value="">All</option>
             {directors.map((director) => (
-              <option value={director} key={director}>{director}</option>
+              <option value={director} key={director}>
+                {director}
+              </option>
             ))}
           </select>
         </div>
@@ -50,11 +51,32 @@ const FilmsPage = () => {
       {loading ? (
         <li>loading films...</li>
       ) : (
-        <ul>
-          {filmsByDirector.map((film) => (
-            <li key={film.id}>{film.title}</li>
-          ))}
-        </ul>
+        <>
+          <ul>
+            {filteredFilms &&
+              filteredFilms.map((film) => (
+                <li key={film.id}>
+                  <Link to={`/film/${film.id}`}>{film.title}</Link>
+                </li>
+              ))}
+          </ul>
+          {total && (
+            <div className="film-stats">
+              <div>
+                <span># Of Films:</span>
+                <span>{total}</span>
+              </div>
+              <div>
+                <span>Average Rating:</span>
+                <span>{avg_score.toFixed(2)}</span>
+              </div>
+              <div>
+                <span>Latest Film:</span>
+                <span>{latest}</span>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
