@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MainLayout } from "../components";
 
 const HomePage = () => {
   const [list, setList] = useState(["ready", "set", "GO"]);
@@ -10,25 +11,36 @@ const HomePage = () => {
     setText("");
   };
 
+  const onDblClick = (idx) => {
+    let newList = list.filter((_, i) => i !== idx);
+    setList(newList);
+  };
+
   return (
-    <div className="main">
+    <MainLayout>
       <h1>Learning React</h1>
+
       <form onSubmit={onSubmit}>
         <input
           type="text"
-          name="text"
-          id="text"
+          name="listitem"
+          id="listitem"
           value={text}
-          onChange={(event) => setText(event.target.value)}
+          onChange={(e) => setText(e.target.value)}
         />
         <button type="submit">Add</button>
       </form>
+
       <ul>
-        {list.map((listItem, i) => (
-          <li key={i}>{listItem}</li>
-        ))}
+        {list.map((item, idx) => {
+          return (
+            <li key={idx} onDoubleClick={() => onDblClick(idx)}>
+              {item}
+            </li>
+          );
+        })}
       </ul>
-    </div>
+    </MainLayout>
   );
 };
 
